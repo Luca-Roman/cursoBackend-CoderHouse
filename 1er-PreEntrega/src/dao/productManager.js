@@ -1,11 +1,10 @@
-const fs=require("fs")
-class ProductManager{
+import fs from "fs"
 
-    productManager(path) {
-        this.path = path
-    }
+export class ProductManager{
+
+    static path
     
-    async getProducts(){
+    static async getProducts(){
         if(fs.existsSync(this.path)){
             let products=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
             return products 
@@ -14,82 +13,28 @@ class ProductManager{
         }
     }
 
-    async existe(code) {
-        if(fs.existsSync(this.path)){
-            let products = await this.getProducts()
-            return products.find(id=>products.code===code)
-        }
-        else {
-            return []
-        }
-    }
-
-    // async addProduct( title, description, price, thumbnail, code, stock){
-    //     // if(typeof title!=="string" || typeof description!=="string" || typeof thumbnail!=="string" || typeof price!=="number" || typeof code!=="number" || typeof stock!=="number"){
-    //     //     console.log(`Argumentos en formato invalido...!!!`)
-    //     //     return 
-    //     // }
-    
-    //     // if(!title.trim() || !description.trim() || !price.trim() || !thumbnail.trim()|| !code.trim()|| !stock.trim()){
-    //     //     console.log(`Complete los datos`)
-    //     //     return 
-    //     // }
-    
-    //     let existe= await this.existe(code)
-    //     if(existe){
-    //         console.log(`Ya existe el producto con codigo ${code}`)
-    //         return 
+    // async getProductById(id){
+    //     if(fs.existsSync(this.path)){
+    //         let products=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
+    //         let productById=products.find(p => p.id === id)
+    //         return productById
+    //     }else{
+    //         return []
     //     }
-    
-        
-    //     let id=1
-    //     let products = this.getProducts()
-    //     if(products.length>0){
-    //         id=Math.max(...products.map(p=>p.id))+1  //[{id:1, nombre:"Juan"}]
-    //     }
-    
-    //     let nuevoProducto={
-    //         id,
-    //         title,
-    //         description,
-    //         price,
-    //         thumbnail,
-    //         code,
-    //         stock
-    //     }
-    //     products.push(nuevoProducto)
-    //     await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
-    //     console.log(`Producto ${title} generado con id ${id}`)
     // }
 
-    async addProduct(product){
-        // if(typeof title!=="string" || typeof description!=="string" || typeof thumbnail!=="string" || typeof price!=="number" || typeof code!=="number" || typeof stock!=="number"){
-        //     console.log(`Argumentos en formato invalido...!!!`)
-        //     return 
-        // }
-    
-        // if(!title.trim() || !description.trim() || !price.trim() || !thumbnail.trim()|| !code.trim()|| !stock.trim()){
-        //     console.log(`Complete los datos`)
-        //     return 
-        // }
-    
-        let existe= await this.existe(product.code)
-        if(existe){
-            console.log(`Ya existe el producto con codigo ${code}`)
-            return 
-        }
-    
-        
+    static async addProduct(product={}){     
+        let products = await this.getProducts()
         let id=1
-        let products = this.getProducts()
         if(products.length>0){
-            id=Math.max(...products.map(p=>p.id))+1  //[{id:1, nombre:"Juan"}]
+            id=Math.max(...products.map(d=>d.id))+1
         }
-        product.id=id
-        products.push(product)
+        let newProduct = {
+            id,
+            ...product
+        }
+        products.push(newProduct)
         await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
-        console.log(`Producto ${title} generado con id ${id}`)
+        return newProduct
     }
 }
-
-module.exports=ProductManager
