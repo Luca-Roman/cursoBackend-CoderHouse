@@ -13,16 +13,6 @@ export class ProductManager{
         }
     }
 
-    // async getProductById(id){
-    //     if(fs.existsSync(this.path)){
-    //         let products=JSON.parse(await fs.promises.readFile(this.path, {encoding:"utf-8"}))
-    //         let productById=products.find(p => p.id === id)
-    //         return productById
-    //     }else{
-    //         return []
-    //     }
-    // }
-
     static async addProduct(product={}){     
         let products = await this.getProducts()
         let id=1
@@ -36,5 +26,29 @@ export class ProductManager{
         products.push(newProduct)
         await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
         return newProduct
+    }
+
+    static async updateProduct(id, productModified) {
+        let products = await this.getProducts()
+        let productIndex = products.findIndex(p => p.id === id)
+        products[productIndex]={
+            ...products[productIndex],
+            ...productModified,
+            id
+        }
+        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+        return products[productIndex]
+    }
+
+    static async deleteProduct(id) {
+        let products = await this.getProducts()
+        let productIndex = products.findIndex(p =>p.id ===id)
+        let cantidad0=products.length
+        products=products.filter(p=>p.id!==id)   
+        let cantidad1=products.length
+       
+        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
+
+        return cantidad0-cantidad1
     }
 }

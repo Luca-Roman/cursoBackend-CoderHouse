@@ -6,15 +6,17 @@
           "code": "123456",
           "price": 273,
           "stock": 4,
-          "category": " "
+          "category": " ",
+          "status": true
      },
      {
           "id": 2,
-          "title": "numero 2",
+          "title": "producto modificado",
           "description": " ",
-          "code": "5432156",
+          "code": "1258",
           "price": 25,
           "stock": 65,
-          "category": " "
+          "category": " ",
+          "status": true
      }
 ]

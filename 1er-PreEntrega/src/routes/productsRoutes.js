@@ -42,7 +42,7 @@ productsRouter.get("/", async (req, res)=>{
     } 
 
     let resultado = products.slice(skip, skip + limit)
-    res.setHeader('Content-Type','text/plain');
+    res.setHeader('Content-Type','application/json');
     return res.status(200).json({resultado});
 })
 
@@ -144,6 +144,8 @@ productsRouter.post("/", async(req, res) => {
                 return res.status(400).json({ error: `La categoria debe estar en formato texto` })
             }
         }
+        product.status = true
+
     } catch (error) {
         console.log(error)
         res.setHeader('Content-Type', 'application/json');
@@ -161,7 +163,7 @@ productsRouter.post("/", async(req, res) => {
         let existe = products.find(p => p.code.toLowerCase() === product.code)
         if (existe) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `Ya existe un producto con codigo ${product.name}`})
+            return res.status(400).json({ error: `Ya existe un producto con codigo ${product.code}`})
         }
         else {
             let newProduct = await ProductManager.addProduct(product)
@@ -170,6 +172,110 @@ productsRouter.post("/", async(req, res) => {
         }
     } catch (error) {
         console.log(error)
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
+    }
+})
+
+productsRouter.put("/:pid", async(req, res)=>{
+    let id = req.params.pid
+    id = Number(id)
+    if (isNaN(id)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `id debe ser numerico` })
+    }
+
+    let products
+    try {
+        products = await ProductManager.getProducts()
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
+    }
+
+    let product = products.find(p => p.id === id)
+    if (!product) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Producto con id ${id} not found` })
+    }
+
+    let productToUpdate = req.body
+    delete productToUpdate.id
+
+    if (productToUpdate.code) {
+        let exist = products.find(p => p.code === productToUpdate.code && p.id !== id)
+        if (exist) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(400).json({ error: `Ya hay otro producto con codigo ${productToUpdate.code}`})
+        }
+    }
+
+    try {
+        let productUpdated = await ProductManager.updateProduct(id, productToUpdate)
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json({ productUpdated });
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
+    }
+})
+
+productsRouter.delete("/:pid", async(req, res)=> {
+    let id = req.params.pid
+    id = Number(id)
+    if (isNaN(id)) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `id debe ser numerico` })
+    }
+
+    let products
+    try {
+        products = await ProductManager.getProducts()
+    } catch (error) {
+        console.log(error);
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json(
+            {
+                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+                detalle: `${error.message}`
+            }
+        )
+    }
+
+    let product = products.find(p => p.id === id)
+    if (!product) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(400).json({ error: `Producto con id ${id} not found` })
+    }
+
+    try {
+        let resultado = await ProductManager.deleteProduct(id)
+        if (resultado > 0) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(200).json({ payload: "Producto eliminado" });
+        } else {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(500).json({ error: `Error al eliminar` })
+        }
+    } catch (error) {
+        console.log(error);
         res.setHeader('Content-Type', 'application/json');
         return res.status(500).json(
             {
