@@ -1,11 +1,11 @@
 import {Router} from "express"
 import{ProductManager} from "../dao/productManager.js"
 
-export const productsRouter = Router()
+export const productRouter = Router()
 
 ProductManager.path ="./src/data/products.json"
 
-productsRouter.get("/", async (req, res)=>{
+productRouter.get("/", async (req, res)=>{
     let products
     try {
         products = await ProductManager.getProducts()
@@ -46,7 +46,7 @@ productsRouter.get("/", async (req, res)=>{
     return res.status(200).json({resultado});
 })
 
-productsRouter.get("/:id", async (req, res)=>{
+productRouter.get("/:id", async (req, res)=>{
     let { id } = req.params
     id = Number(id)
     if (isNaN(id)) {
@@ -77,7 +77,7 @@ productsRouter.get("/:id", async (req, res)=>{
     return res.status(200).json({product});
 })
 
-productsRouter.post("/", async(req, res) => {
+productRouter.post("/", async(req, res) => {
     let product = req.body
     //VALIDACIONES
     try {
@@ -182,7 +182,7 @@ productsRouter.post("/", async(req, res) => {
     }
 })
 
-productsRouter.put("/:pid", async(req, res)=>{
+productRouter.put("/:pid", async(req, res)=>{
     let id = req.params.pid
     id = Number(id)
     if (isNaN(id)) {
@@ -237,7 +237,7 @@ productsRouter.put("/:pid", async(req, res)=>{
     }
 })
 
-productsRouter.delete("/:pid", async(req, res)=> {
+productRouter.delete("/:pid", async(req, res)=> {
     let id = req.params.pid
     id = Number(id)
     if (isNaN(id)) {

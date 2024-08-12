@@ -1,0 +1,71 @@
+[
+     {
+          "id": 1,
+          "products": [
+               {
+                    "id": 1,
+                    "title": "Hola",
+                    "description": " ",
+                    "code": "123456",
+                    "price": 273,
+                    "stock": 4,
+                    "category": " ",
+                    "status": true
+               }
+          ]
+     },
+     {
+          "id": 3,
+          "products": [
+               {
+                    "id": 1,
+                    "title": "Hola",
+                    "description": " ",
+                    "code": "123456",
+                    "price": 273,
+                    "stock": 4,
+                    "category": " ",
+                    "status": true
+               },
+               {
+                    "id": 2,
+                    "title": "producto modificado",
+                    "description": " ",
+                    "code": "1258",
+                    "price": 25,
+                    "stock": 65,
+                    "category": " ",
+                    "status": true
+               }
+          ]
+     },
+     {
+          "id": 4,
+          "products": [
+               {
+                    "id": 1,
+                    "title": "Hola",
+                    "description": " ",
+                    "code": "123456",
+                    "price": 273,
+                    "stock": 4,
+                    "category": " ",
+                    "status": true
+               },
+               {
+                    "id": 2,
+                    "title": "producto modificado",
+                    "description": " ",
+                    "code": "1258",
+                    "price": 25,
+                    "stock": 65,
+                    "category": " ",
+                    "status": true
+               }
+          ]
+     },
+     {
+          "id": 5,
+          "products": []
+     }
+]

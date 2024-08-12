@@ -1,6 +1,6 @@
 import express from "express";
-import { productsRouter } from "./routes/productsRoutes.js";
-
+import { productRouter } from "./routes/productRoutes.js";
+import { cartRouter } from "./routes/cartRoutes.js";
 //const express=require("express");
 //const ProductManager=require("./dao/productManager");
 
@@ -10,7 +10,8 @@ const app=express()
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 
-app.use("/api/products",productsRouter)
+app.use("/api/products",productRouter)
+app.use("/api/carts",cartRouter)
 
 app.use("/", (req, res)=> {
     res.setHeader('Content-Type','text/plain');
