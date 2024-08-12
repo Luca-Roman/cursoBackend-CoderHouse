@@ -13,6 +13,16 @@ export class ProductManager{
         }
     }
 
+    static async getProductById(id){
+        let products = await this.getProducts()
+        let product = products.find(p => p.id === id)
+        if (!product) {
+            throw new Error(`Product with id ${id} not found`);
+        } else {
+            return product
+        }
+    }
+
     static async addProduct(product={}){     
         let products = await this.getProducts()
         let id=1
@@ -42,7 +52,6 @@ export class ProductManager{
 
     static async deleteProduct(id) {
         let products = await this.getProducts()
-        let productIndex = products.findIndex(p =>p.id ===id)
         let cantidad0=products.length
         products=products.filter(p=>p.id!==id)   
         let cantidad1=products.length

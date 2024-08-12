@@ -1,9 +1,9 @@
 [
      {
           "id": 1,
-          "title": "Hola",
+          "title": "Primer producto",
           "description": " ",
-          "code": "123456",
+          "code": "123",
           "price": 273,
           "stock": 4,
           "category": " ",
@@ -11,12 +11,12 @@
      },
      {
           "id": 2,
-          "title": "producto modificado",
-          "description": " ",
-          "code": "1258",
+          "title": "producto",
+          "description": "Vamo lo pibe",
+          "code": "5568",
           "price": 25,
           "stock": 65,
-          "category": " ",
+          "category": "prueba",
           "status": true
      }
 ]

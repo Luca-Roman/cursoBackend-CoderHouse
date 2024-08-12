@@ -1,4 +1,5 @@
 import fs from "fs"
+import { ProductManager } from "./productManager.js"
 
 export class CartManager{
 
@@ -13,7 +14,17 @@ export class CartManager{
         }
     }
 
-    static async addCart(products=[]){     
+    static async getCartById(id){
+        let carts = await this.getCarts()
+        let cart = carts.find(c => c.id === id)
+        if (!cart) {
+            throw new Error (`Cart with id: ${id} not found`)
+        } else {
+            return cart
+        }
+    }
+
+    static async addCart(){     
         let carts = await this.getCarts()
         let id=1
         if(carts.length>0){
@@ -21,34 +32,37 @@ export class CartManager{
         }
         let newCart = {
             id,
-            products
+            products : []
         }
         carts.push(newCart)
         await fs.promises.writeFile(this.path, JSON.stringify(carts, null, 5))
         return newCart
     }
 
-    static async updateProduct(id, productModified) {
-        let products = await this.getProducts()
-        let productIndex = products.findIndex(p => p.id === id)
-        products[productIndex]={
-            ...products[productIndex],
-            ...productModified,
-            id
+    static async addProduct(cid, pid){
+        try {
+            let carts = await this.getCarts()
+            let cartIndex = carts.findIndex(c => c.id === cid)
+            if (cartIndex < 0) {
+                throw new Error(`Cart with id: ${cid} not found`);
+            }
+            else {
+                let products = await ProductManager.getProductById(pid)
+                let productIndex = carts[cartIndex].products.findIndex(p => p.pid === pid)
+                if (productIndex >= 0) {
+                    carts[cartIndex].products[productIndex].quantity++
+                } else {
+                    let product = {
+                        pid,
+                        quantity : 1
+                    }
+                    carts[cartIndex].products.push(product)
+                }
+                await fs.promises.writeFile(this.path, JSON.stringify(carts, null, 5))
+                return carts[cartIndex]
+            }
+        } catch (error) {
+            throw new Error(error);
         }
-        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
-        return products[productIndex]
-    }
-
-    static async deleteProduct(id) {
-        let products = await this.getProducts()
-        let productIndex = products.findIndex(p =>p.id ===id)
-        let cantidad0=products.length
-        products=products.filter(p=>p.id!==id)   
-        let cantidad1=products.length
-       
-        await fs.promises.writeFile(this.path, JSON.stringify(products, null, 5))
-
-        return cantidad0-cantidad1
     }
 }

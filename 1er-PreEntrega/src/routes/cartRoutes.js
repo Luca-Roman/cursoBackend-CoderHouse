@@ -46,54 +46,36 @@ cartRouter.get("/", async (req, res)=>{
     return res.status(200).json({resultado});
 })
 
-cartRouter.get("/:id", async (req, res)=>{
-    let { id } = req.params
-    id = Number(id)
-    if (isNaN(id)) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `id debe ser numerico` })
-    }
-    
-    let products
-    try {
-        products = await CartManager.getProducts()
-    } catch (error) {
-        console.log(error)
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
-    }
-    let product = products.find(p => p.id === id)
-    if (!product) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `Producto con id ${id} not found` })
-    }
+cartRouter.get("/:cid", async (req, res)=>{
+    try {    
+        let { cid } = req.params
+        cid = Number(cid)
+        if (isNaN(cid)) {
+            res.setHeader('Content-Type', 'application/json');
+            return res.status(400).json({ error: `id debe ser numerico` })
+        }
 
-    res.setHeader('Content-Type', 'application/json');
-    return res.status(200).json({product});
+        let cart = await CartManager.getCartById(cid)
+        if (!cart) {
+            return res.status(404).json({ error: 'Cart not found' });
+        }
+
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(200).json({products: cart.products});
+    } catch (error) {
+        res.setHeader('Content-Type', 'application/json');
+        return res.status(500).json({
+            error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+            detalle: `${error.message}`
+        })
+    }
 })
 
 cartRouter.post("/", async(req, res) => {
-    let products = req.body.products
-    console.log("Productos en el carrito ", products)
-
     try {
-        if (products.length < 1) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `El carrito debe contener al menos un producto` })
-        }
-    } catch (error) {
-        
-    }
-    // Agregamos el nuevo producto verificando que no haya un codigo repetido
-    try {
-        let newCart = await CartManager.addCart(products)
+        let newCart = await CartManager.addCart()
         res.setHeader('Content-Type', 'application/json');
-        return res.status(200).json(`Carro generado correctamente con ID ${newCart.id}`)
+        return res.status(200).json(`Carro creado correctamente con ID ${newCart.id}`)
     } catch (error) {
         console.log(error)
         res.setHeader('Content-Type', 'application/json');
@@ -106,106 +88,28 @@ cartRouter.post("/", async(req, res) => {
     }
 })
 
-cartRouter.put("/:pid", async(req, res)=>{
-    let id = req.params.pid
-    id = Number(id)
-    if (isNaN(id)) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `id debe ser numerico` })
-    }
-
-    let products
+cartRouter.post("/:cid/product/:pid", async(req, res) => {
     try {
-        products = await CartManager.getProducts()
-    } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
-    }
-
-    let product = products.find(p => p.id === id)
-    if (!product) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `Producto con id ${id} not found` })
-    }
-
-    let productToUpdate = req.body
-    delete productToUpdate.id
-
-    if (productToUpdate.code) {
-        let exist = products.find(p => p.code === productToUpdate.code && p.id !== id)
-        if (exist) {
+        let { cid, pid } = req.params
+        cid = Number(cid)
+        pid = Number(pid)
+        if (isNaN(cid) | isNaN(pid)) {
             res.setHeader('Content-Type', 'application/json');
-            return res.status(400).json({ error: `Ya hay otro producto con codigo ${productToUpdate.code}`})
+            return res.status(400).json({ error: `Ambos id deben ser numerico` })
         }
-    }
+        let cartUpdated = await CartManager.addProduct(cid, pid)
 
-    try {
-        let productUpdated = await CartManager.updateProduct(id, productToUpdate)
         res.setHeader('Content-Type', 'application/json');
-        return res.status(200).json({ productUpdated });
-    } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
-    }
-})
-
-cartRouter.delete("/:pid", async(req, res)=> {
-    let id = req.params.pid
-    id = Number(id)
-    if (isNaN(id)) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `id debe ser numerico` })
-    }
-
-    let products
-    try {
-        products = await CartManager.getProducts()
-    } catch (error) {
-        console.log(error);
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
-    }
-
-    let product = products.find(p => p.id === id)
-    if (!product) {
-        res.setHeader('Content-Type', 'application/json');
-        return res.status(400).json({ error: `Producto con id ${id} not found` })
-    }
-
-    try {
-        let resultado = await CartManager.deleteProduct(id)
-        if (resultado > 0) {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(200).json({ payload: "Producto eliminado" });
-        } else {
-            res.setHeader('Content-Type', 'application/json');
-            return res.status(500).json({ error: `Error al eliminar` })
+        return res.status(200).json({cartUpdated});
+    }catch (error) {
+        console.log("Console error:", error)
+        if (error.message.includes('id')) {
+            return res.status(404).json({ error: error.message });
         }
-    } catch (error) {
-        console.log(error);
         res.setHeader('Content-Type', 'application/json');
-        return res.status(500).json(
-            {
-                error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
-                detalle: `${error.message}`
-            }
-        )
+        return res.status(500).json({
+            error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
+            detalle: `${error.message}`
+        })
     }
 })
