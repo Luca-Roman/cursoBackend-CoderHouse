@@ -11,7 +11,6 @@ cartRouter.get("/", async (req, res)=>{
         carts = await CartManager.getCarts()
     } catch (error) {
         console.log(error)
-        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json(
             {
                 error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -24,7 +23,6 @@ cartRouter.get("/", async (req, res)=>{
     if (limit) {
         limit = Number(limit)
         if (isNaN(limit)) {
-            res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `El argumento limit tiene que ser numerico` })
         }
     } else {
@@ -34,7 +32,6 @@ cartRouter.get("/", async (req, res)=>{
     if (skip) {
         skip = Number(skip)
         if (isNaN(skip)) {
-            res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `El argumento skip tiene que ser numerico` })
         }
     } else {
@@ -42,7 +39,6 @@ cartRouter.get("/", async (req, res)=>{
     } 
 
     let resultado = carts.slice(skip, skip + limit)
-    res.setHeader('Content-Type','application/json');
     return res.status(200).json({resultado});
 })
 
@@ -51,7 +47,6 @@ cartRouter.get("/:cid", async (req, res)=>{
         let { cid } = req.params
         cid = Number(cid)
         if (isNaN(cid)) {
-            res.setHeader('Content-Type', 'application/json');
             return res.status(400).json({ error: `id debe ser numerico` })
         }
 
@@ -59,11 +54,8 @@ cartRouter.get("/:cid", async (req, res)=>{
         if (!cart) {
             return res.status(404).json({ error: 'Cart not found' });
         }
-
-        res.setHeader('Content-Type', 'application/json');
         return res.status(200).json({products: cart.products});
     } catch (error) {
-        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json({
             error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
             detalle: `${error.message}`
@@ -78,7 +70,6 @@ cartRouter.post("/", async(req, res) => {
         return res.status(200).json(`Carro creado correctamente con ID ${newCart.id}`)
     } catch (error) {
         console.log(error)
-        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json(
             {
                 error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
@@ -98,15 +89,12 @@ cartRouter.post("/:cid/product/:pid", async(req, res) => {
             return res.status(400).json({ error: `Ambos id deben ser numerico` })
         }
         let cartUpdated = await CartManager.addProduct(cid, pid)
-
-        res.setHeader('Content-Type', 'application/json');
         return res.status(200).json({cartUpdated});
     }catch (error) {
         console.log("Console error:", error)
         if (error.message.includes('id')) {
             return res.status(404).json({ error: error.message });
         }
-        res.setHeader('Content-Type', 'application/json');
         return res.status(500).json({
             error: `Error inesperado en el servidor - Intente más tarde, o contacte a su administrador`,
             detalle: `${error.message}`
