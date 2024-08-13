@@ -1,11 +1,11 @@
 import {Router} from "express"
 import{CartManager} from "../dao/cartManager.js"
 
-export const cartRouter = Router()
+export const router = Router()
 
 CartManager.path ="./src/data/carts.json"
 
-cartRouter.get("/", async (req, res)=>{
+router.get("/", async (req, res)=>{
     let carts
     try {
         carts = await CartManager.getCarts()
@@ -42,7 +42,7 @@ cartRouter.get("/", async (req, res)=>{
     return res.status(200).json({resultado});
 })
 
-cartRouter.get("/:cid", async (req, res)=>{
+router.get("/:cid", async (req, res)=>{
     try {    
         let { cid } = req.params
         cid = Number(cid)
@@ -63,7 +63,7 @@ cartRouter.get("/:cid", async (req, res)=>{
     }
 })
 
-cartRouter.post("/", async(req, res) => {
+router.post("/", async(req, res) => {
     try {
         let newCart = await CartManager.addCart()
         res.setHeader('Content-Type', 'application/json');
@@ -79,7 +79,7 @@ cartRouter.post("/", async(req, res) => {
     }
 })
 
-cartRouter.post("/:cid/product/:pid", async(req, res) => {
+router.post("/:cid/product/:pid", async(req, res) => {
     try {
         let { cid, pid } = req.params
         cid = Number(cid)

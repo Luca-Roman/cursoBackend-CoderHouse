@@ -18,6 +18,10 @@
                {
                     "pid": 2,
                     "quantity": 5
+               },
+               {
+                    "pid": 3,
+                    "quantity": 3
                }
           ]
      }
