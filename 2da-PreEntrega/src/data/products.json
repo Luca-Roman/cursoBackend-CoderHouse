@@ -1,0 +1,31 @@
+[{
+    "id": 1,
+    "title": "Primer producto",
+    "description": " ",
+    "code": "123",
+    "price": 273,
+    "stock": 4,
+    "category": " ",
+    "status": true
+},
+{
+    "id": 2,
+    "title": "producto",
+    "description": "Vamo lo pibe",
+    "code": "5568",
+    "price": 25,
+    "stock": 65,
+    "category": "prueba",
+    "status": true
+},
+{
+    "id": 3,
+    "title": "Tornillo",
+    "description": "Probando",
+    "code": "548879",
+    "price": 450,
+    "stock": 655,
+    "category": " ",
+    "status": true
+}
+]
